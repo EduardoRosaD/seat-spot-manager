@@ -29,10 +29,10 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
 
-    const response = await fetch('http://localhost:3000/create-user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+    const response = await fetch("/api/create-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
     });
 
     if (!response.ok) {
@@ -42,10 +42,24 @@ const Auth = () => {
         description: 'Por favor, tente novamente.',
       });
     } else {
-      toast({
-        title: 'Cadastro realizado!',
-        description: 'Você já pode fazer login.',
+      // Após cadastro bem-sucedido, fazer login automático
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
+
+      if (signInError) {
+        toast({
+          title: 'Cadastro realizado!',
+          description: 'Você já pode fazer login.',
+        });
+      } else {
+        toast({
+          title: 'Cadastro realizado!',
+          description: 'Você foi logado automaticamente.',
+        });
+        navigate('/');
+      }
     }
     setLoading(false);
   };
