@@ -20,46 +20,56 @@ const Layout = ({ children }: LayoutProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <aside className="fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border">
-        <div className="p-6">
-          <div className="flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Armchair className="w-5 h-5 text-primary" />
-            </div>
-            <span className="font-bold text-lg text-sidebar-foreground">ChairManager</span>
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar - SEMPRE 64px no mobile */}
+      <div className="fixed left-0 top-0 h-screen bg-slate-800 border-r border-gray-700 w-16 z-50 flex flex-col">
+        
+        {/* Logo */}
+        <div className="p-3 border-b border-gray-700">
+          <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
+            <Armchair className="w-6 h-6 text-white" />
           </div>
-          <nav className="space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              return (
-                <Link key={item.path} to={item.path}>
-                  <Button
-                    variant={isActive ? 'secondary' : 'ghost'}
-                    className="w-full justify-start"
-                  >
-                    <Icon className="w-4 h-4 mr-2" />
-                    {item.label}
-                  </Button>
-                </Link>
-              );
-            })}
-          </nav>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 p-6">
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-muted-foreground"
+
+        {/* Navigation */}
+        <div className="flex-1 py-4">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link key={item.path} to={item.path} className="block">
+                <div 
+                  className={`mx-2 mb-2 h-12 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
+                    isActive 
+                      ? 'bg-green-600 text-white' 
+                      : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                  }`}
+                  title={item.label}
+                >
+                  <Icon size={20} />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Footer */}
+        <div className="p-2 border-t border-gray-700">
+          <div 
+            className="h-12 rounded-lg flex items-center justify-center cursor-pointer text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
             onClick={signOut}
+            title="Sair"
           >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sair
-          </Button>
+            <LogOut size={20} />
+          </div>
         </div>
-      </aside>
-      <main className="ml-64 p-8">
-        {children}
+      </div>
+
+      {/* Main Content */}
+      <main className="flex-1 ml-16">
+        <div className="p-4 sm:p-8">
+          {children}
+        </div>
       </main>
     </div>
   );

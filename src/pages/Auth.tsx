@@ -29,22 +29,17 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`,
-        data: {
-          full_name: fullName,
-        },
-      },
+    const response = await fetch('http://localhost:3000/create-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     });
 
-    if (error) {
+    if (!response.ok) {
       toast({
         variant: 'destructive',
         title: 'Erro ao cadastrar',
-        description: error.message,
+        description: 'Por favor, tente novamente.',
       });
     } else {
       toast({
