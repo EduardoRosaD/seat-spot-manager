@@ -27,21 +27,5 @@ git push origin main
 
 ## 🔗 Endpoints Disponíveis
 
-Após rodar `vercel dev` ou deploy:
-
-- **Formulário**: `http://localhost:3000` (dev) ou `https://seu-projeto.vercel.app` (prod)
-- **Enviar Email**: `POST /api/send-email`
-- **Ver Leads**: `GET /api/leads`
-- **Health Check**: `GET /api/health`
-
-## 🎯 Fluxo Simples
-
-1. **Usuário preenche** formulário no site
-2. **Frontend faz** `POST /api/send-email`
-3. **API salva** no MongoDB
-4. **API envia** emails via OAuth2
-5. **Usuário recebe** confirmação
-
----
 
 **Sistema limpo e direto. Apenas Vercel serverless!** 🚀
