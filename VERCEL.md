@@ -28,4 +28,5 @@ git push origin main
 ## 🔗 Endpoints Disponíveis
 
 
+
 **Sistema limpo e direto. Apenas Vercel serverless!** 🚀

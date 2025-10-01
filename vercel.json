@@ -1,17 +1,6 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "functions": {
-    "api/send-email.ts": {
-      "maxDuration": 30
-    },
-    "api/health.ts": {
-      "maxDuration": 10
-    },
-    "api/leads.ts": {
-      "maxDuration": 15
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
