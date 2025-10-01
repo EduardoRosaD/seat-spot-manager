@@ -123,7 +123,9 @@ const Index = () => {
                     : 0}
                   %
                 </div>
-                <p className="text-xs text-muted-foreground">Cadeiras alugadas</p>
+                <p className="text-xs text-muted-foreground">
+                  {stats.totalChairs - stats.availableChairs} Cadeiras alugadas
+                </p>
               </CardContent>
             </Card>
 
@@ -139,7 +141,9 @@ const Index = () => {
                     : 0}
                   %
                 </div>
-                <p className="text-xs text-muted-foreground">Mesas alugadas</p>
+                <p className="text-xs text-muted-foreground">
+                  {stats.totalTables - stats.availableTables} Mesas alugadas
+                </p>
               </CardContent>
             </Card>
 
