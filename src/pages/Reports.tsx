@@ -30,7 +30,7 @@ const Reports = () => {
       .from('rentals')
       .select('amount')
       .eq('user_id', user.id)
-      .gte('rental_date', weekStart.toISOString());
+      .gte('start_date', weekStart.toISOString());
     
     setWeeklyRevenue(weeklyData?.reduce((sum, r) => sum + Number(r.amount), 0) || 0);
 
@@ -39,7 +39,7 @@ const Reports = () => {
       .from('rentals')
       .select('amount')
       .eq('user_id', user.id)
-      .gte('rental_date', monthStart.toISOString());
+      .gte('start_date', monthStart.toISOString());
     
     setMonthlyRevenue(monthlyData?.reduce((sum, r) => sum + Number(r.amount), 0) || 0);
 
@@ -48,7 +48,7 @@ const Reports = () => {
       .from('rentals')
       .select('amount')
       .eq('user_id', user.id)
-      .gte('rental_date', yearStart.toISOString());
+      .gte('start_date', yearStart.toISOString());
     
     setYearlyRevenue(yearlyData?.reduce((sum, r) => sum + Number(r.amount), 0) || 0);
 
@@ -59,7 +59,7 @@ const Reports = () => {
       .eq('user_id', user.id);
 
     if (rentalsWithCustomers) {
-      const customerCounts = rentalsWithCustomers.reduce((acc: any, rental: any) => {
+      const customerCounts = rentalsWithCustomers.reduce((acc: Record<string, { name: string; count: number }>, rental: { customer_id: string; customers: { name: string } | null }) => {
         const customerId = rental.customer_id;
         const customerName = rental.customers?.name || 'Desconhecido';
         if (!acc[customerId]) {
@@ -69,7 +69,7 @@ const Reports = () => {
         return acc;
       }, {});
 
-      const topCustomerData = Object.values(customerCounts).sort((a: any, b: any) => b.count - a.count)[0] as any;
+      const topCustomerData = Object.values(customerCounts).sort((a: { name: string; count: number }, b: { name: string; count: number }) => b.count - a.count)[0];
       setTopCustomer(topCustomerData || null);
     }
   };

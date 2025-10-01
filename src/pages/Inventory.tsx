@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const Inventory = () => {
   const [totalChairs, setTotalChairs] = useState('');
-  const [availableChairs, setAvailableChairs] = useState('');
+  const [totalTables, setTotalTables] = useState('');
   const [loading, setLoading] = useState(false);
   const [hasInventory, setHasInventory] = useState(false);
   const { toast } = useToast();
@@ -31,7 +31,7 @@ const Inventory = () => {
 
     if (data) {
       setTotalChairs(data.total_chairs.toString());
-      setAvailableChairs(data.available_chairs.toString());
+      setTotalTables(data.total_tables?.toString() || '');
       setHasInventory(true);
     }
   };
@@ -46,7 +46,7 @@ const Inventory = () => {
     const inventoryData = {
       user_id: user.id,
       total_chairs: parseInt(totalChairs),
-      available_chairs: parseInt(availableChairs),
+      total_tables: parseInt(totalTables) || 0,
       updated_at: new Date().toISOString(),
     };
 
@@ -82,48 +82,62 @@ const Inventory = () => {
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Inventário</h1>
-            <p className="text-muted-foreground">Gerencie o total de cadeiras disponíveis</p>
+            <p className="text-muted-foreground">Gerencie o total de cadeiras e mesas disponíveis</p>
           </div>
 
-          <Card className="max-w-2xl">
-            <CardHeader>
-              <CardTitle>Controle de Cadeiras</CardTitle>
-              <CardDescription>
-                Atualize a quantidade total e disponível de cadeiras no seu inventário
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSave} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="total">Total de Cadeiras</Label>
-                  <Input
-                    id="total"
-                    type="number"
-                    min="0"
-                    placeholder="100"
-                    value={totalChairs}
-                    onChange={(e) => setTotalChairs(e.target.value)}
-                    required
-                  />
+          <div className="grid gap-6 max-w-4xl">
+            <Card>
+              <CardHeader>
+                <CardTitle>Controle de Cadeiras</CardTitle>
+                <CardDescription>
+                  Defina o total de cadeiras no seu inventário
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSave} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="total">Total de Cadeiras</Label>
+                    <Input
+                      id="total"
+                      type="number"
+                      min="0"
+                      placeholder="100"
+                      value={totalChairs}
+                      onChange={(e) => setTotalChairs(e.target.value)}
+                      required
+                    />
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Controle de Mesas</CardTitle>
+                <CardDescription>
+                  Defina o total de mesas no seu inventário
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="totalTables">Total de Mesas</Label>
+                    <Input
+                      id="totalTables"
+                      type="number"
+                      min="0"
+                      placeholder="20"
+                      value={totalTables}
+                      onChange={(e) => setTotalTables(e.target.value)}
+                    />
+                  </div>
+                  <Button type="submit" disabled={loading} onClick={handleSave}>
+                    {loading ? 'Salvando...' : 'Salvar Inventário'}
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="available">Cadeiras Disponíveis</Label>
-                  <Input
-                    id="available"
-                    type="number"
-                    min="0"
-                    placeholder="75"
-                    value={availableChairs}
-                    onChange={(e) => setAvailableChairs(e.target.value)}
-                    required
-                  />
-                </div>
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Salvando...' : 'Salvar Inventário'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </Layout>
     </ProtectedRoute>

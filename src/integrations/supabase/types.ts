@@ -43,23 +43,23 @@ export type Database = {
       }
       inventory: {
         Row: {
-          available_chairs: number
           id: string
           total_chairs: number
+          total_tables: number
           updated_at: string
           user_id: string
         }
         Insert: {
-          available_chairs?: number
           id?: string
           total_chairs?: number
+          total_tables?: number
           updated_at?: string
           user_id: string
         }
         Update: {
-          available_chairs?: number
           id?: string
           total_chairs?: number
+          total_tables?: number
           updated_at?: string
           user_id?: string
         }
@@ -89,41 +89,53 @@ export type Database = {
       rentals: {
         Row: {
           amount: number
+          chair_quantity: number
           created_at: string
           customer_id: string
+          end_date: string | null
           id: string
+          item_type: string
           location_lat: number
           location_lng: number
           location_name: string | null
           quantity: number
-          rental_date: string
           returned: boolean
+          start_date: string | null
+          table_quantity: number
           user_id: string
         }
         Insert: {
           amount: number
+          chair_quantity?: number
           created_at?: string
           customer_id: string
+          end_date?: string | null
           id?: string
+          item_type?: string
           location_lat: number
           location_lng: number
           location_name?: string | null
           quantity: number
-          rental_date: string
           returned?: boolean
+          start_date?: string | null
+          table_quantity?: number
           user_id: string
         }
         Update: {
           amount?: number
+          chair_quantity?: number
           created_at?: string
           customer_id?: string
+          end_date?: string | null
           id?: string
+          item_type?: string
           location_lat?: number
           location_lng?: number
           location_name?: string | null
           quantity?: number
-          rental_date?: string
           returned?: boolean
+          start_date?: string | null
+          table_quantity?: number
           user_id?: string
         }
         Relationships: [

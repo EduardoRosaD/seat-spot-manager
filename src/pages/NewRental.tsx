@@ -11,14 +11,13 @@ import { useNavigate } from 'react-router-dom';
 
 const NewRental = () => {
   const [customerName, setCustomerName] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [chairQuantity, setChairQuantity] = useState('');
+  const [tableQuantity, setTableQuantity] = useState('');
   const [amount, setAmount] = useState('');
   const [locationName, setLocationName] = useState('');
-  const [locationLat, setLocationLat] = useState('');
-  const [locationLng, setLocationLng] = useState('');
-  const [rentalDate, setRentalDate] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -26,6 +25,20 @@ const NewRental = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    const chairQty = parseInt(chairQuantity) || 0;
+    const tableQty = parseInt(tableQuantity) || 0;
+
+    // Validate that at least one item is selected
+    if (chairQty === 0 && tableQty === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro de validação',
+        description: 'Selecione pelo menos uma cadeira ou mesa para o aluguel.',
+      });
+      setLoading(false);
+      return;
+    }
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -36,7 +49,7 @@ const NewRental = () => {
       .from('customers')
       .select('id')
       .eq('user_id', user.id)
-      .eq('email', customerEmail)
+      .eq('name', customerName)
       .maybeSingle();
 
     if (existingCustomer) {
@@ -47,7 +60,6 @@ const NewRental = () => {
         .insert({
           user_id: user.id,
           name: customerName,
-          email: customerEmail,
           phone: customerPhone,
         })
         .select()
@@ -65,16 +77,30 @@ const NewRental = () => {
       customerId = newCustomer.id;
     }
 
-    // Create rental
+    // Determine item type based on selected items
+    let itemType = '';
+    if (chairQty > 0 && tableQty > 0) {
+      itemType = 'mixed';
+    } else if (chairQty > 0) {
+      itemType = 'chair';
+    } else {
+      itemType = 'table';
+    }
+
+    // Create single rental
     const { error: rentalError } = await supabase.from('rentals').insert({
       user_id: user.id,
       customer_id: customerId,
-      rental_date: new Date(rentalDate).toISOString(),
-      location_lat: parseFloat(locationLat),
-      location_lng: parseFloat(locationLng),
+      start_date: startDate ? new Date(startDate).toISOString() : null,
+      end_date: endDate ? new Date(endDate).toISOString() : null,
+      location_lat: 0,
+      location_lng: 0,
       location_name: locationName,
-      quantity: parseInt(quantity),
+      quantity: chairQty + tableQty, // Total quantity
+      chair_quantity: chairQty,
+      table_quantity: tableQty,
       amount: parseFloat(amount),
+      item_type: itemType,
       returned: false,
     });
 
@@ -85,22 +111,6 @@ const NewRental = () => {
         description: rentalError.message,
       });
     } else {
-      // Update inventory
-      const { data: inventory } = await supabase
-        .from('inventory')
-        .select('available_chairs')
-        .eq('user_id', user.id)
-        .single();
-
-      if (inventory) {
-        await supabase
-          .from('inventory')
-          .update({
-            available_chairs: inventory.available_chairs - parseInt(quantity),
-          })
-          .eq('user_id', user.id);
-      }
-
       toast({
         title: 'Aluguel criado!',
         description: 'O aluguel foi registrado com sucesso.',
@@ -116,7 +126,7 @@ const NewRental = () => {
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Novo Aluguel</h1>
-            <p className="text-muted-foreground">Registre um novo aluguel de cadeiras</p>
+            <p className="text-muted-foreground">Registre um novo aluguel de cadeiras e/ou mesas</p>
           </div>
 
           <Card className="max-w-2xl">
@@ -138,16 +148,6 @@ const NewRental = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="customerEmail">Email</Label>
-                    <Input
-                      id="customerEmail"
-                      type="email"
-                      value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="customerPhone">Telefone</Label>
                     <Input
                       id="customerPhone"
@@ -159,29 +159,57 @@ const NewRental = () => {
 
                 <div className="space-y-4">
                   <h3 className="font-semibold">Detalhes do Aluguel</h3>
-                  <div className="space-y-2">
-                    <Label htmlFor="rentalDate">Data do Aluguel</Label>
-                    <Input
-                      id="rentalDate"
-                      type="datetime-local"
-                      value={rentalDate}
-                      onChange={(e) => setRentalDate(e.target.value)}
-                      required
-                    />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="startDate">Data de Entrada</Label>
+                      <Input
+                        id="startDate"
+                        type="datetime-local"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="endDate">Data de Saída</Label>
+                      <Input
+                        id="endDate"
+                        type="datetime-local"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="quantity">Quantidade de Cadeiras</Label>
-                    <Input
-                      id="quantity"
-                      type="number"
-                      min="1"
-                      value={quantity}
-                      onChange={(e) => setQuantity(e.target.value)}
-                      required
-                    />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="chairQuantity">Quantidade de Cadeiras</Label>
+                      <Input
+                        id="chairQuantity"
+                        type="number"
+                        min="0"
+                        placeholder="0"
+                        value={chairQuantity}
+                        onChange={(e) => setChairQuantity(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tableQuantity">Quantidade de Mesas</Label>
+                      <Input
+                        id="tableQuantity"
+                        type="number"
+                        min="0"
+                        placeholder="0"
+                        value={tableQuantity}
+                        onChange={(e) => setTableQuantity(e.target.value)}
+                      />
+                    </div>
                   </div>
+                  
                   <div className="space-y-2">
-                    <Label htmlFor="amount">Valor (R$)</Label>
+                    <Label htmlFor="amount">Valor Total (R$)</Label>
                     <Input
                       id="amount"
                       type="number"
@@ -205,35 +233,6 @@ const NewRental = () => {
                       onChange={(e) => setLocationName(e.target.value)}
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="locationLat">Latitude</Label>
-                      <Input
-                        id="locationLat"
-                        type="number"
-                        step="any"
-                        placeholder="-23.5505"
-                        value={locationLat}
-                        onChange={(e) => setLocationLat(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="locationLng">Longitude</Label>
-                      <Input
-                        id="locationLng"
-                        type="number"
-                        step="any"
-                        placeholder="-46.6333"
-                        value={locationLng}
-                        onChange={(e) => setLocationLng(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Nota: Em breve você poderá selecionar a localização diretamente no mapa
-                  </p>
                 </div>
 
                 <Button type="submit" disabled={loading} className="w-full">
