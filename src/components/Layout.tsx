@@ -16,7 +16,7 @@ const Layout = ({ children }: LayoutProps) => {
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: Package, label: 'Inventário', path: '/inventory' },
     { icon: PlusCircle, label: 'Novo Aluguel', path: '/rentals/new' },
-    { icon: Calendar, label: 'Aluguéis Ativos', path: '/rentals/active' },
+    { icon: Calendar, label: 'Aluguéis', path: '/rentals/active' },
     { icon: TrendingUp, label: 'Relatórios', path: '/reports' },
   ];
 

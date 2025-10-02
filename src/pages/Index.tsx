@@ -152,12 +152,12 @@ const Index = () => {
               onClick={() => navigate('/rentals/active')}
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Aluguéis Ativos</CardTitle>
+                <CardTitle className="text-sm font-medium">Aluguéis</CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.activeRentals}</div>
-                <p className="text-xs text-muted-foreground">Clique para visualizar</p>
+                <p className="text-xs text-muted-foreground">Clique para gerenciar</p>
               </CardContent>
             </Card>
 
