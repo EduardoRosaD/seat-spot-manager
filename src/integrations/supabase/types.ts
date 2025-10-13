@@ -46,6 +46,7 @@ export type Database = {
           id: string
           total_chairs: number
           total_tables: number
+          total_tablecloths: number
           updated_at: string
           user_id: string
         }
@@ -53,6 +54,7 @@ export type Database = {
           id?: string
           total_chairs?: number
           total_tables?: number
+          total_tablecloths?: number
           updated_at?: string
           user_id: string
         }
@@ -60,6 +62,7 @@ export type Database = {
           id?: string
           total_chairs?: number
           total_tables?: number
+          total_tablecloths?: number
           updated_at?: string
           user_id?: string
         }
@@ -98,10 +101,13 @@ export type Database = {
           location_lat: number
           location_lng: number
           location_name: string | null
+          notes: string | null
           quantity: number
           returned: boolean
           start_date: string | null
           table_quantity: number
+          tablecloth_color_id: string | null
+          tablecloth_quantity: number
           user_id: string
         }
         Insert: {
@@ -115,10 +121,13 @@ export type Database = {
           location_lat: number
           location_lng: number
           location_name?: string | null
+          notes?: string | null
           quantity: number
           returned?: boolean
           start_date?: string | null
           table_quantity?: number
+          tablecloth_color_id?: string | null
+          tablecloth_quantity?: number
           user_id: string
         }
         Update: {
@@ -132,10 +141,13 @@ export type Database = {
           location_lat?: number
           location_lng?: number
           location_name?: string | null
+          notes?: string | null
           quantity?: number
           returned?: boolean
           start_date?: string | null
           table_quantity?: number
+          tablecloth_color_id?: string | null
+          tablecloth_quantity?: number
           user_id?: string
         }
         Relationships: [
@@ -146,7 +158,38 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "rentals_tablecloth_color_id_fkey"
+            columns: ["tablecloth_color_id"]
+            isOneToOne: false
+            referencedRelation: "tablecloth_colors"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      tablecloth_colors: {
+        Row: {
+          created_at: string
+          hex_color: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hex_color: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hex_color?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -177,7 +220,7 @@ export type Tables<
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

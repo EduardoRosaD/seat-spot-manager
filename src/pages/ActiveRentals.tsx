@@ -9,8 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Table, Calendar, MapPin, DollarSign, User, Filter, SortAsc } from 'lucide-react';
-import { format } from 'date-fns';
+import { Package, Table, Calendar, MapPin, DollarSign, User, Filter, SortAsc, Square, AlertTriangle } from 'lucide-react';
+import { format, isPast, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface Rental {
@@ -20,13 +20,19 @@ interface Rental {
   location_name: string | null;
   chair_quantity: number;
   table_quantity: number;
+  tablecloth_quantity: number;
   amount: number;
   item_type: string;
   returned: boolean;
   created_at: string;
+  notes: string | null;
   customers: {
     name: string;
     phone: string | null;
+  };
+  tablecloth_colors?: {
+    name: string;
+    hex_color: string;
   };
 }
 
@@ -57,13 +63,19 @@ const ActiveRentals = () => {
         location_name,
         chair_quantity,
         table_quantity,
+        tablecloth_quantity,
         amount,
         item_type,
         returned,
         created_at,
+        notes,
         customers (
           name,
           phone
+        ),
+        tablecloth_colors (
+          name,
+          hex_color
         )
       `)
       .eq('user_id', user.id)
@@ -177,6 +189,7 @@ const ActiveRentals = () => {
     switch (type) {
       case 'chair': return 'Cadeiras';
       case 'table': return 'Mesas';
+      case 'tablecloth': return 'Toalhas';
       case 'mixed': return 'Misto';
       default: return type;
     }
@@ -186,6 +199,7 @@ const ActiveRentals = () => {
     switch (type) {
       case 'chair': return 'bg-blue-100 text-blue-800';
       case 'table': return 'bg-green-100 text-green-800';
+      case 'tablecloth': return 'bg-pink-100 text-pink-800';
       case 'mixed': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -334,14 +348,28 @@ const ActiveRentals = () => {
                       <div className="flex items-center gap-2">
                         <Package className="h-4 w-4 text-blue-600" />
                         <span className="text-sm">
-                          <strong>{rental.chair_quantity}</strong> cadeiras
+                          <strong>{rental.chair_quantity || 0}</strong> cadeiras
                         </span>
                       </div>
                       
                       <div className="flex items-center gap-2">
                         <Table className="h-4 w-4 text-green-600" />
                         <span className="text-sm">
-                          <strong>{rental.table_quantity}</strong> mesas
+                          <strong>{rental.table_quantity || 0}</strong> mesas
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Square className="h-4 w-4 text-pink-600" />
+                        <span className="text-sm flex items-center gap-1">
+                          <strong>{rental.tablecloth_quantity || 0}</strong> toalhas
+                          {rental.tablecloth_quantity > 0 && rental.tablecloth_colors?.hex_color && (
+                            <div
+                              className="w-3 h-3 rounded-full border border-gray-300 ml-1"
+                              style={{ backgroundColor: rental.tablecloth_colors.hex_color }}
+                              title={rental.tablecloth_colors.name}
+                            />
+                          )}
                         </span>
                       </div>
                       
@@ -351,14 +379,14 @@ const ActiveRentals = () => {
                           R$ {rental.amount.toFixed(2)}
                         </span>
                       </div>
-                      
-                      {rental.location_name && (
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-red-600" />
-                          <span className="text-sm">{rental.location_name}</span>
-                        </div>
-                      )}
                     </div>
+
+                    {rental.location_name && (
+                      <div className="flex items-center gap-2 pt-2">
+                        <MapPin className="h-4 w-4 text-red-600" />
+                        <span className="text-sm">{rental.location_name}</span>
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t">
                       <div className="flex items-center gap-2">
@@ -386,11 +414,35 @@ const ActiveRentals = () => {
                       {rental.end_date && (
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">Fim: </span>
-                            <span className="font-medium">
-                              {format(new Date(rental.end_date), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                            </span>
+                          <div className="text-sm flex items-center gap-2">
+                            <div>
+                              <span className="text-muted-foreground">Fim: </span>
+                              <span className="font-medium">
+                                {format(new Date(rental.end_date), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                              </span>
+                            </div>
+                            {(() => {
+                              const endDate = new Date(rental.end_date);
+                              const isOverdue = isPast(endDate) && !isToday(endDate);
+                              const isDueToday = isToday(endDate);
+                              
+                              if (isOverdue && !rental.returned) {
+                                return (
+                                  <div className="flex items-center gap-1 text-red-600">
+                                    <AlertTriangle className="h-3 w-3" />
+                                    <span className="text-xs font-medium">ATRASADO</span>
+                                  </div>
+                                );
+                              } else if (isDueToday && !rental.returned) {
+                                return (
+                                  <div className="flex items-center gap-1 text-orange-600">
+                                    <AlertTriangle className="h-3 w-3" />
+                                    <span className="text-xs font-medium">VENCE HOJE</span>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })()}
                           </div>
                         </div>
                       )}
@@ -417,6 +469,17 @@ const ActiveRentals = () => {
                         </Button>
                       )}
                     </div>
+
+                    {rental.notes && (
+                      <div className="mt-4 p-3 bg-gray-50 rounded-md">
+                        <div className="flex items-start gap-2">
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-700">Observações:</span>
+                            <p className="text-gray-600 mt-1">{rental.notes}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}

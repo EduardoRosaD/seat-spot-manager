@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 const Inventory = () => {
   const [totalChairs, setTotalChairs] = useState('');
   const [totalTables, setTotalTables] = useState('');
+  const [totalTablecloths, setTotalTablecloths] = useState('');
   const [loading, setLoading] = useState(false);
   const [hasInventory, setHasInventory] = useState(false);
   const { toast } = useToast();
@@ -32,6 +33,7 @@ const Inventory = () => {
     if (data) {
       setTotalChairs(data.total_chairs.toString());
       setTotalTables(data.total_tables?.toString() || '');
+      setTotalTablecloths(data.total_tablecloths?.toString() || '');
       setHasInventory(true);
     }
   };
@@ -45,8 +47,9 @@ const Inventory = () => {
 
     const inventoryData = {
       user_id: user.id,
-      total_chairs: parseInt(totalChairs),
+      total_chairs: parseInt(totalChairs) || 0,
       total_tables: parseInt(totalTables) || 0,
+      total_tablecloths: parseInt(totalTablecloths) || 0,
       updated_at: new Date().toISOString(),
     };
 
@@ -82,7 +85,7 @@ const Inventory = () => {
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Inventário</h1>
-            <p className="text-muted-foreground">Gerencie o total de cadeiras e mesas disponíveis</p>
+            <p className="text-muted-foreground">Gerencie o total de cadeiras, mesas e toalhas disponíveis</p>
           </div>
 
           <div className="grid gap-6 max-w-4xl">
@@ -94,20 +97,19 @@ const Inventory = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSave} className="space-y-4">
+                <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="total">Total de Cadeiras</Label>
+                    <Label htmlFor="totalChairs">Total de Cadeiras</Label>
                     <Input
-                      id="total"
+                      id="totalChairs"
                       type="number"
                       min="0"
                       placeholder="100"
                       value={totalChairs}
                       onChange={(e) => setTotalChairs(e.target.value)}
-                      required
                     />
                   </div>
-                </form>
+                </div>
               </CardContent>
             </Card>
 
@@ -129,6 +131,30 @@ const Inventory = () => {
                       placeholder="20"
                       value={totalTables}
                       onChange={(e) => setTotalTables(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Controle de Toalhas</CardTitle>
+                <CardDescription>
+                  Defina o total de toalhas no seu inventário
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="totalTablecloths">Total de Toalhas</Label>
+                    <Input
+                      id="totalTablecloths"
+                      type="number"
+                      min="0"
+                      placeholder="50"
+                      value={totalTablecloths}
+                      onChange={(e) => setTotalTablecloths(e.target.value)}
                     />
                   </div>
                   <Button type="submit" disabled={loading} onClick={handleSave}>
