@@ -11,6 +11,7 @@ const Reports = () => {
   const [monthlyRevenue, setMonthlyRevenue] = useState(0);
   const [yearlyRevenue, setYearlyRevenue] = useState(0);
   const [topCustomer, setTopCustomer] = useState<{ name: string; count: number } | null>(null);
+  const [monthlyBreakdown, setMonthlyBreakdown] = useState<{ month: string; revenue: number }[]>([]);
 
   useEffect(() => {
     loadReports();
@@ -72,6 +73,36 @@ const Reports = () => {
       const topCustomerData = Object.values(customerCounts).sort((a: { name: string; count: number }, b: { name: string; count: number }) => b.count - a.count)[0];
       setTopCustomer(topCustomerData || null);
     }
+
+    // Monthly breakdown for the current year
+    const { data: allRentals } = await supabase
+      .from('rentals')
+      .select('amount, start_date')
+      .eq('user_id', user.id)
+      .gte('start_date', yearStart.toISOString())
+      .order('start_date');
+
+    if (allRentals) {
+      const monthNames = [
+        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+      ];
+
+      const monthlyData: Record<number, number> = {};
+      
+      allRentals.forEach((rental: { amount: number; start_date: string }) => {
+        const date = new Date(rental.start_date);
+        const month = date.getMonth();
+        monthlyData[month] = (monthlyData[month] || 0) + Number(rental.amount);
+      });
+
+      const breakdown = monthNames.map((name, index) => ({
+        month: name,
+        revenue: monthlyData[index] || 0
+      }));
+
+      setMonthlyBreakdown(breakdown);
+    }
   };
 
   return (
@@ -86,6 +117,7 @@ const Reports = () => {
           <Tabs defaultValue="financial" className="space-y-4">
             <TabsList>
               <TabsTrigger value="financial">Financeiro</TabsTrigger>
+              <TabsTrigger value="monthly">Mês a Mês</TabsTrigger>
               <TabsTrigger value="customers">Clientes</TabsTrigger>
             </TabsList>
 
@@ -127,6 +159,43 @@ const Reports = () => {
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+
+            <TabsContent value="monthly">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Receita Mês a Mês (Ano Atual)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {monthlyBreakdown.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between border-b pb-3 last:border-0">
+                        <div className="flex-1">
+                          <p className="font-medium">{item.month}</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="w-48 bg-muted rounded-full h-2">
+                            <div 
+                              className="bg-primary h-2 rounded-full transition-all"
+                              style={{ 
+                                width: `${monthlyBreakdown.length > 0 ? (item.revenue / Math.max(...monthlyBreakdown.map(m => m.revenue)) * 100) : 0}%` 
+                              }}
+                            />
+                          </div>
+                          <p className="text-lg font-bold min-w-[120px] text-right">
+                            R$ {item.revenue.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    {monthlyBreakdown.length === 0 && (
+                      <p className="text-muted-foreground text-center py-4">
+                        Nenhum dado disponível
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="customers">
