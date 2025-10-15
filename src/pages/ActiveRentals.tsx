@@ -7,9 +7,28 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Table, Calendar, MapPin, DollarSign, User, Filter, SortAsc, Square, AlertTriangle } from 'lucide-react';
+import { Package, Table, Calendar, MapPin, DollarSign, User, Filter, SortAsc, Square, AlertTriangle, Pencil, Trash2 } from 'lucide-react';
 import { format, isPast, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -21,6 +40,7 @@ interface Rental {
   chair_quantity: number;
   table_quantity: number;
   tablecloth_quantity: number;
+  tablecloth_color_id: string | null;
   amount: number;
   item_type: string;
   returned: boolean;
@@ -31,9 +51,16 @@ interface Rental {
     phone: string | null;
   };
   tablecloth_colors?: {
+    id: string;
     name: string;
     hex_color: string;
   };
+}
+
+interface TableclothColor {
+  id: string;
+  name: string;
+  hex_color: string;
 }
 
 type FilterStatus = 'all' | 'active' | 'inactive';
@@ -48,6 +75,21 @@ const ActiveRentals = () => {
   const [sortBy, setSortBy] = useState<SortBy>('date');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedRental, setSelectedRental] = useState<Rental | null>(null);
+  const [tableclothColors, setTableclothColors] = useState<TableclothColor[]>([]);
+  const [editFormData, setEditFormData] = useState({
+    chair_quantity: '',
+    table_quantity: '',
+    tablecloth_quantity: '',
+    tablecloth_color_id: '',
+    amount: '',
+    location_name: '',
+    start_date: '',
+    end_date: '',
+    notes: '',
+  });
   const { toast } = useToast();
 
   const loadActiveRentals = useCallback(async () => {
@@ -64,6 +106,7 @@ const ActiveRentals = () => {
         chair_quantity,
         table_quantity,
         tablecloth_quantity,
+        tablecloth_color_id,
         amount,
         item_type,
         returned,
@@ -74,6 +117,7 @@ const ActiveRentals = () => {
           phone
         ),
         tablecloth_colors (
+          id,
           name,
           hex_color
         )
@@ -143,6 +187,23 @@ const ActiveRentals = () => {
     loadActiveRentals();
   }, [loadActiveRentals]);
 
+  useEffect(() => {
+    const fetchTableclothColors = async () => {
+      const { data, error } = await supabase
+        .from('tablecloth_colors')
+        .select('*')
+        .order('name');
+
+      if (error) {
+        console.error('Error fetching tablecloth colors:', error);
+      } else {
+        setTableclothColors(data || []);
+      }
+    };
+
+    fetchTableclothColors();
+  }, []);
+
   const handleMarkAsReturned = async (rentalId: string) => {
     const { error } = await supabase
       .from('rentals')
@@ -164,25 +225,116 @@ const ActiveRentals = () => {
     }
   };
 
-  const handleMarkAsActive = async (rentalId: string) => {
+  const handleEditRental = (rental: Rental) => {
+    setSelectedRental(rental);
+    setEditFormData({
+      chair_quantity: rental.chair_quantity.toString(),
+      table_quantity: rental.table_quantity.toString(),
+      tablecloth_quantity: rental.tablecloth_quantity.toString(),
+      tablecloth_color_id: rental.tablecloth_color_id || '',
+      amount: rental.amount.toString(),
+      location_name: rental.location_name || '',
+      start_date: rental.start_date ? new Date(rental.start_date).toISOString().slice(0, 16) : '',
+      end_date: rental.end_date ? new Date(rental.end_date).toISOString().slice(0, 16) : '',
+      notes: rental.notes || '',
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDeleteRental = (rental: Rental) => {
+    setSelectedRental(rental);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedRental) return;
+
     const { error } = await supabase
       .from('rentals')
-      .update({ returned: false })
-      .eq('id', rentalId);
+      .delete()
+      .eq('id', selectedRental.id);
 
     if (error) {
       toast({
         variant: 'destructive',
-        title: 'Erro ao marcar como ativo',
+        title: 'Erro ao excluir aluguel',
         description: error.message,
       });
     } else {
       toast({
-        title: 'Aluguel reativado!',
-        description: 'O aluguel foi marcado como ativo.',
+        title: 'Aluguel excluído!',
+        description: 'O aluguel foi removido com sucesso.',
       });
-      loadActiveRentals(); // Reload the list
+      loadActiveRentals();
     }
+    setIsDeleteDialogOpen(false);
+    setSelectedRental(null);
+  };
+
+  const saveEditedRental = async () => {
+    if (!selectedRental) return;
+
+    const chairQty = parseInt(editFormData.chair_quantity) || 0;
+    const tableQty = parseInt(editFormData.table_quantity) || 0;
+    const tableclothQty = parseInt(editFormData.tablecloth_quantity) || 0;
+
+    if (chairQty === 0 && tableQty === 0 && tableclothQty === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro de validação',
+        description: 'Selecione pelo menos uma cadeira, mesa ou toalha.',
+      });
+      return;
+    }
+
+    // Determine item type
+    let itemType = '';
+    const hasChairs = chairQty > 0;
+    const hasTables = tableQty > 0;
+    const hasTablecloths = tableclothQty > 0;
+
+    if ((hasChairs && hasTables) || (hasChairs && hasTablecloths) || (hasTables && hasTablecloths) || (hasChairs && hasTables && hasTablecloths)) {
+      itemType = 'mixed';
+    } else if (hasChairs) {
+      itemType = 'chair';
+    } else if (hasTables) {
+      itemType = 'table';
+    } else if (hasTablecloths) {
+      itemType = 'tablecloth';
+    }
+
+    const { error } = await supabase
+      .from('rentals')
+      .update({
+        chair_quantity: chairQty,
+        table_quantity: tableQty,
+        tablecloth_quantity: tableclothQty,
+        tablecloth_color_id: editFormData.tablecloth_color_id || null,
+        quantity: chairQty + tableQty + tableclothQty,
+        amount: parseFloat(editFormData.amount),
+        location_name: editFormData.location_name || null,
+        start_date: editFormData.start_date ? new Date(editFormData.start_date).toISOString() : null,
+        end_date: editFormData.end_date ? new Date(editFormData.end_date).toISOString() : null,
+        notes: editFormData.notes || null,
+        item_type: itemType,
+      })
+      .eq('id', selectedRental.id);
+
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao atualizar aluguel',
+        description: error.message,
+      });
+    } else {
+      toast({
+        title: 'Aluguel atualizado!',
+        description: 'As informações do aluguel foram atualizadas.',
+      });
+      loadActiveRentals();
+      setIsEditDialogOpen(false);
+    }
+    setSelectedRental(null);
   };
 
   const getItemTypeLabel = (type: string) => {
@@ -449,7 +601,25 @@ const ActiveRentals = () => {
                     </div>
 
                     <div className="flex justify-end pt-2 gap-2">
-                      {!rental.returned ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditRental(rental)}
+                        className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
+                      >
+                        <Pencil className="h-4 w-4 mr-1" />
+                        Editar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteRental(rental)}
+                        className="hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Excluir
+                      </Button>
+                      {!rental.returned && (
                         <Button
                           variant="outline"
                           size="sm"
@@ -457,15 +627,6 @@ const ActiveRentals = () => {
                           className="hover:bg-green-50 hover:text-green-700 hover:border-green-300"
                         >
                           Marcar como Devolvido
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleMarkAsActive(rental.id)}
-                          className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
-                        >
-                          Reativar Aluguel
                         </Button>
                       )}
                     </div>
@@ -486,6 +647,198 @@ const ActiveRentals = () => {
             </div>
           )}
         </div>
+
+        {/* Edit Rental Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Editar Aluguel</DialogTitle>
+              <DialogDescription>
+                Atualize as informações do aluguel de {selectedRental?.customers.name}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-chair-quantity">Quantidade de Cadeiras</Label>
+                  <Input
+                    id="edit-chair-quantity"
+                    type="number"
+                    min="0"
+                    value={editFormData.chair_quantity}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, chair_quantity: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-table-quantity">Quantidade de Mesas</Label>
+                  <Input
+                    id="edit-table-quantity"
+                    type="number"
+                    min="0"
+                    value={editFormData.table_quantity}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, table_quantity: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-tablecloth-quantity">Quantidade de Toalhas</Label>
+                  <Input
+                    id="edit-tablecloth-quantity"
+                    type="number"
+                    min="0"
+                    value={editFormData.tablecloth_quantity}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, tablecloth_quantity: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              {parseInt(editFormData.tablecloth_quantity) > 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="edit-tablecloth-color">Cor das Toalhas</Label>
+                  <Select 
+                    value={editFormData.tablecloth_color_id} 
+                    onValueChange={(value) => setEditFormData({ ...editFormData, tablecloth_color_id: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma cor">
+                        {editFormData.tablecloth_color_id && (() => {
+                          const selectedColor = tableclothColors.find(color => color.id === editFormData.tablecloth_color_id);
+                          return selectedColor ? (
+                            <div className="flex items-center gap-2">
+                              {selectedColor.hex_color && (
+                                <div
+                                  className="w-4 h-4 rounded-full border border-gray-300"
+                                  style={{ backgroundColor: selectedColor.hex_color }}
+                                />
+                              )}
+                              <span>{selectedColor.name}</span>
+                            </div>
+                          ) : "Selecione uma cor";
+                        })()}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tableclothColors.map((color) => (
+                        <SelectItem key={color.id} value={color.id}>
+                          <div className="flex items-center gap-2">
+                            {color.hex_color && (
+                              <div
+                                className="w-4 h-4 rounded-full border border-gray-300"
+                                style={{ backgroundColor: color.hex_color }}
+                              />
+                            )}
+                            {color.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-amount">Valor Total (R$)</Label>
+                <Input
+                  id="edit-amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editFormData.amount}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, amount: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-location">Localização</Label>
+                <Input
+                  id="edit-location"
+                  value={editFormData.location_name}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, location_name: e.target.value })
+                  }
+                  placeholder="Ex: Salão de festas"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-start-date">Data de Início</Label>
+                  <Input
+                    id="edit-start-date"
+                    type="datetime-local"
+                    value={editFormData.start_date}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, start_date: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-end-date">Data de Término</Label>
+                  <Input
+                    id="edit-end-date"
+                    type="datetime-local"
+                    value={editFormData.end_date}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, end_date: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-notes">Observações</Label>
+                <Textarea
+                  id="edit-notes"
+                  value={editFormData.notes}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, notes: e.target.value })
+                  }
+                  placeholder="Observações adicionais sobre o aluguel..."
+                  rows={3}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={saveEditedRental}>Salvar Alterações</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tem certeza que deseja excluir o aluguel de{' '}
+                <strong>{selectedRental?.customers.name}</strong>? Esta ação não pode
+                ser desfeita.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Excluir
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </Layout>
     </ProtectedRoute>
   );

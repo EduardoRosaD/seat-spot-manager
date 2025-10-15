@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Armchair, LayoutDashboard, Package, PlusCircle, Calendar, TrendingUp, LogOut } from 'lucide-react';
+import { Armchair, LayoutDashboard, Package, PlusCircle, Calendar, TrendingUp, LogOut, Users } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface LayoutProps {
@@ -17,6 +17,7 @@ const Layout = ({ children }: LayoutProps) => {
     { icon: Package, label: 'Inventário', path: '/inventory' },
     { icon: PlusCircle, label: 'Novo Aluguel', path: '/rentals/new' },
     { icon: Calendar, label: 'Aluguéis', path: '/rentals/active' },
+    { icon: Users, label: 'Clientes', path: '/customers' },
     { icon: TrendingUp, label: 'Relatórios', path: '/reports' },
   ];
 
