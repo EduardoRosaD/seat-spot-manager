@@ -115,10 +115,9 @@ const Reports = () => {
           </div>
 
           <Tabs defaultValue="financial" className="space-y-4 w-full">
-            <TabsList className="grid w-full grid-cols-3 h-auto">
+            <TabsList className="grid w-full grid-cols-2 h-auto">
               <TabsTrigger value="financial" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Financeiro</TabsTrigger>
               <TabsTrigger value="monthly" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Mês a Mês</TabsTrigger>
-              <TabsTrigger value="customers" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Clientes</TabsTrigger>
             </TabsList>
 
             <TabsContent value="financial" className="space-y-4">
@@ -194,26 +193,6 @@ const Reports = () => {
                       </p>
                     )}
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="customers">
-              <Card>
-                <CardHeader className="px-4 sm:px-6">
-                  <CardTitle className="text-base sm:text-lg">Cliente Mais Frequente</CardTitle>
-                </CardHeader>
-                <CardContent className="px-4 sm:px-6">
-                  {topCustomer ? (
-                    <div>
-                      <p className="text-xl sm:text-2xl font-bold break-words">{topCustomer.name}</p>
-                      <p className="text-sm sm:text-base text-muted-foreground mt-1">
-                        {topCustomer.count} aluguéis realizados
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-sm sm:text-base text-muted-foreground">Nenhum aluguel registrado ainda</p>
-                  )}
                 </CardContent>
               </Card>
             </TabsContent>
