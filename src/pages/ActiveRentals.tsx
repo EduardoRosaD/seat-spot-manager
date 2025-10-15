@@ -376,79 +376,79 @@ const ActiveRentals = () => {
   return (
     <ProtectedRoute>
       <Layout>
-        <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Gerenciar Aluguéis</h1>
-            <p className="text-sm sm:text-base text-muted-foreground mt-1">
+        <div className="space-y-4 sm:space-y-6 px-2 sm:px-4 lg:px-0">
+          <div className="px-2 sm:px-0">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Gerenciar Aluguéis</h1>
+            <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">
               Visualize e gerencie todos os aluguéis ({totalRentals} total, {activeRentals} ativos, {inactiveRentals} finalizados)
             </p>
           </div>
 
           {/* Filtros e Controles */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Card className="mx-2 sm:mx-0">
+            <CardHeader className="px-3 sm:px-6 py-3 sm:py-4">
+              <CardTitle className="flex items-center gap-2 text-sm sm:text-base lg:text-lg">
                 <Filter className="h-4 w-4 sm:h-5 sm:w-5" />
                 Filtros e Ordenação
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="search" className="text-sm">Buscar cliente</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="search" className="text-xs sm:text-sm">Buscar cliente</Label>
                   <Input
                     id="search"
                     placeholder="Nome do cliente..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="text-sm"
+                    className="text-xs sm:text-sm h-9 sm:h-10"
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="status" className="text-sm">Status</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="status" className="text-xs sm:text-sm">Status</Label>
                   <Select value={filterStatus} onValueChange={(value: FilterStatus) => setFilterStatus(value)}>
-                    <SelectTrigger className="text-sm">
+                    <SelectTrigger className="text-xs sm:text-sm h-9 sm:h-10">
                       <SelectValue placeholder="Selecione o status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      <SelectItem value="active">Ativos</SelectItem>
-                      <SelectItem value="inactive">Finalizados</SelectItem>
+                      <SelectItem value="all" className="text-xs sm:text-sm">Todos</SelectItem>
+                      <SelectItem value="active" className="text-xs sm:text-sm">Ativos</SelectItem>
+                      <SelectItem value="inactive" className="text-xs sm:text-sm">Finalizados</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="sortBy" className="text-sm">Ordenar por</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="sortBy" className="text-xs sm:text-sm">Ordenar por</Label>
                   <Select value={sortBy} onValueChange={(value: SortBy) => setSortBy(value)}>
-                    <SelectTrigger className="text-sm">
+                    <SelectTrigger className="text-xs sm:text-sm h-9 sm:h-10">
                       <SelectValue placeholder="Ordenar por" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="date">Data</SelectItem>
-                      <SelectItem value="price">Preço</SelectItem>
-                      <SelectItem value="customer">Cliente</SelectItem>
+                      <SelectItem value="date" className="text-xs sm:text-sm">Data</SelectItem>
+                      <SelectItem value="price" className="text-xs sm:text-sm">Preço</SelectItem>
+                      <SelectItem value="customer" className="text-xs sm:text-sm">Cliente</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="sortOrder" className="text-sm">Ordem</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="sortOrder" className="text-xs sm:text-sm">Ordem</Label>
                   <Select value={sortOrder} onValueChange={(value: SortOrder) => setSortOrder(value)}>
-                    <SelectTrigger className="text-sm">
+                    <SelectTrigger className="text-xs sm:text-sm h-9 sm:h-10">
                       <SelectValue placeholder="Ordem" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="desc">
+                      <SelectItem value="desc" className="text-xs sm:text-sm">
                         <div className="flex items-center gap-2">
-                          <SortAsc className="h-4 w-4 rotate-180" />
+                          <SortAsc className="h-3 w-3 sm:h-4 sm:w-4 rotate-180" />
                           Decrescente
                         </div>
                       </SelectItem>
-                      <SelectItem value="asc">
+                      <SelectItem value="asc" className="text-xs sm:text-sm">
                         <div className="flex items-center gap-2">
-                          <SortAsc className="h-4 w-4" />
+                          <SortAsc className="h-3 w-3 sm:h-4 sm:w-4" />
                           Crescente
                         </div>
                       </SelectItem>
@@ -460,11 +460,11 @@ const ActiveRentals = () => {
           </Card>
 
           {filteredRentals.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Package className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Nenhum aluguel encontrado</h3>
-                <p className="text-muted-foreground text-center">
+            <Card className="mx-2 sm:mx-0">
+              <CardContent className="flex flex-col items-center justify-center py-8 sm:py-12">
+                <Package className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mb-3 sm:mb-4" />
+                <h3 className="text-base sm:text-lg font-semibold mb-2">Nenhum aluguel encontrado</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground text-center px-4">
                   {searchTerm || filterStatus !== 'all' 
                     ? 'Tente ajustar os filtros para encontrar aluguéis.' 
                     : 'Não há aluguéis cadastrados.'}
@@ -472,53 +472,55 @@ const ActiveRentals = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid gap-3 sm:gap-4 px-2 sm:px-0">
               {filteredRentals.map((rental) => (
-                <Card key={rental.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3 px-4 sm:px-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <User className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
-                        <div className="min-w-0">
-                          <CardTitle className="text-base sm:text-lg truncate">{rental.customers.name}</CardTitle>
-                          {rental.customers.phone && (
-                            <p className="text-xs sm:text-sm text-muted-foreground">{rental.customers.phone}</p>
-                          )}
+                <Card key={rental.id} className="hover:shadow-md transition-shadow overflow-hidden">
+                  <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4">
+                    <div className="flex flex-col gap-2 sm:gap-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start gap-2 min-w-0 flex-1">
+                          <User className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                          <div className="min-w-0 flex-1">
+                            <CardTitle className="text-sm sm:text-base lg:text-lg truncate">{rental.customers.name}</CardTitle>
+                            {rental.customers.phone && (
+                              <p className="text-xs sm:text-sm text-muted-foreground truncate">{rental.customers.phone}</p>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Badge className={`${getItemTypeBadgeColor(rental.item_type)} text-xs`}>
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                        <Badge className={`${getItemTypeBadgeColor(rental.item_type)} text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5`}>
                           {getItemTypeLabel(rental.item_type)}
                         </Badge>
-                        <Badge variant={rental.returned ? "secondary" : "default"} className="text-xs">
+                        <Badge variant={rental.returned ? "secondary" : "default"} className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">
                           {rental.returned ? "Finalizado" : "Ativo"}
                         </Badge>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-                      <div className="flex items-center gap-1.5 sm:gap-2">
+                  <CardContent className="space-y-2.5 sm:space-y-3 lg:space-y-4 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                      <div className="flex items-center gap-1.5 min-w-0">
                         <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
-                        <span className="text-xs sm:text-sm">
+                        <span className="text-xs sm:text-sm truncate">
                           <strong>{rental.chair_quantity || 0}</strong> cadeiras
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-1.5 sm:gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
                         <Table className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
-                        <span className="text-xs sm:text-sm">
+                        <span className="text-xs sm:text-sm truncate">
                           <strong>{rental.table_quantity || 0}</strong> mesas
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-1.5 sm:gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
                         <Square className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-pink-600 flex-shrink-0" />
-                        <span className="text-xs sm:text-sm flex items-center gap-1">
+                        <span className="text-xs sm:text-sm flex items-center gap-1 truncate">
                           <strong>{rental.tablecloth_quantity || 0}</strong> toalhas
                           {rental.tablecloth_quantity > 0 && rental.tablecloth_colors?.hex_color && (
                             <div
-                              className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-gray-300 ml-0.5 sm:ml-1 flex-shrink-0"
+                              className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-gray-300 flex-shrink-0"
                               style={{ backgroundColor: rental.tablecloth_colors.hex_color }}
                               title={rental.tablecloth_colors.name}
                             />
@@ -526,52 +528,52 @@ const ActiveRentals = () => {
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-1.5 sm:gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
                         <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-600 flex-shrink-0" />
-                        <span className="text-xs sm:text-sm font-semibold">
+                        <span className="text-xs sm:text-sm font-semibold truncate">
                           R$ {rental.amount.toFixed(2)}
                         </span>
                       </div>
                     </div>
 
                     {rental.location_name && (
-                      <div className="flex items-center gap-1.5 sm:gap-2 pt-1 sm:pt-2">
+                      <div className="flex items-center gap-1.5 pt-1">
                         <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
                         <span className="text-xs sm:text-sm truncate">{rental.location_name}</span>
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 gap-2 sm:gap-3 pt-2 border-t">
-                      <div className="flex items-start gap-1.5 sm:gap-2">
+                    <div className="grid grid-cols-1 gap-1.5 sm:gap-2 pt-2 border-t">
+                      <div className="flex items-start gap-1.5">
                         <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <div className="text-xs sm:text-sm">
-                          <span className="text-muted-foreground">Criado em: </span>
-                          <span className="font-medium">
-                            {format(new Date(rental.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                        <div className="text-xs sm:text-sm min-w-0">
+                          <span className="text-muted-foreground">Criado: </span>
+                          <span className="font-medium break-words">
+                            {format(new Date(rental.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
                           </span>
                         </div>
                       </div>
                       
                       {rental.start_date && (
-                        <div className="flex items-start gap-1.5 sm:gap-2">
+                        <div className="flex items-start gap-1.5">
                           <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                          <div className="text-xs sm:text-sm">
+                          <div className="text-xs sm:text-sm min-w-0">
                             <span className="text-muted-foreground">Início: </span>
-                            <span className="font-medium">
-                              {format(new Date(rental.start_date), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                            <span className="font-medium break-words">
+                              {format(new Date(rental.start_date), "dd/MM/yyyy HH:mm", { locale: ptBR })}
                             </span>
                           </div>
                         </div>
                       )}
                       
                       {rental.end_date && (
-                        <div className="flex items-start gap-1.5 sm:gap-2">
+                        <div className="flex items-start gap-1.5">
                           <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                          <div className="text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                          <div className="text-xs sm:text-sm flex flex-col gap-1 min-w-0">
                             <div>
                               <span className="text-muted-foreground">Fim: </span>
-                              <span className="font-medium">
-                                {format(new Date(rental.end_date), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                              <span className="font-medium break-words">
+                                {format(new Date(rental.end_date), "dd/MM/yyyy HH:mm", { locale: ptBR })}
                               </span>
                             </div>
                             {(() => {
@@ -582,14 +584,14 @@ const ActiveRentals = () => {
                               if (isOverdue && !rental.returned) {
                                 return (
                                   <div className="flex items-center gap-1 text-red-600">
-                                    <AlertTriangle className="h-3 w-3" />
+                                    <AlertTriangle className="h-3 w-3 flex-shrink-0" />
                                     <span className="text-[10px] sm:text-xs font-medium">ATRASADO</span>
                                   </div>
                                 );
                               } else if (isDueToday && !rental.returned) {
                                 return (
                                   <div className="flex items-center gap-1 text-orange-600">
-                                    <AlertTriangle className="h-3 w-3" />
+                                    <AlertTriangle className="h-3 w-3 flex-shrink-0" />
                                     <span className="text-[10px] sm:text-xs font-medium">VENCE HOJE</span>
                                   </div>
                                 );
@@ -601,33 +603,33 @@ const ActiveRentals = () => {
                       )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:justify-end pt-2 gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditRental(rental)}
-                        className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 w-full sm:w-auto text-xs sm:text-sm"
-                      >
-                        <Pencil className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1" />
-                        <span className="hidden sm:inline">Editar</span>
-                        <span className="sm:hidden">Editar</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteRental(rental)}
-                        className="hover:bg-red-50 hover:text-red-700 hover:border-red-300 w-full sm:w-auto text-xs sm:text-sm"
-                      >
-                        <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1" />
-                        <span className="hidden sm:inline">Excluir</span>
-                        <span className="sm:hidden">Excluir</span>
-                      </Button>
+                    <div className="flex flex-col gap-2 pt-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditRental(rental)}
+                          className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 w-full text-xs sm:text-sm h-8 sm:h-9"
+                        >
+                          <Pencil className="h-3.5 w-3.5 sm:mr-1" />
+                          <span className="hidden sm:inline">Editar</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteRental(rental)}
+                          className="hover:bg-red-50 hover:text-red-700 hover:border-red-300 w-full text-xs sm:text-sm h-8 sm:h-9"
+                        >
+                          <Trash2 className="h-3.5 w-3.5 sm:mr-1" />
+                          <span className="hidden sm:inline">Excluir</span>
+                        </Button>
+                      </div>
                       {!rental.returned && (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleMarkAsReturned(rental.id)}
-                          className="hover:bg-green-50 hover:text-green-700 hover:border-green-300 w-full sm:w-auto text-xs sm:text-sm"
+                          className="hover:bg-green-50 hover:text-green-700 hover:border-green-300 w-full text-xs sm:text-sm h-8 sm:h-9"
                         >
                           Marcar como Devolvido
                         </Button>
@@ -635,12 +637,10 @@ const ActiveRentals = () => {
                     </div>
 
                     {rental.notes && (
-                      <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 bg-gray-50 rounded-md">
-                        <div className="flex items-start gap-2">
-                          <div className="text-xs sm:text-sm">
-                            <span className="font-medium text-gray-700">Observações:</span>
-                            <p className="text-gray-600 mt-1 break-words">{rental.notes}</p>
-                          </div>
+                      <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-gray-50 rounded-md">
+                        <div className="text-xs sm:text-sm">
+                          <span className="font-medium text-gray-700">Observações:</span>
+                          <p className="text-gray-600 mt-1 break-words">{rental.notes}</p>
                         </div>
                       </div>
                     )}
@@ -653,14 +653,14 @@ const ActiveRentals = () => {
 
         {/* Edit Rental Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-[95vw] lg:w-full mx-auto">
             <DialogHeader>
-              <DialogTitle className="text-lg sm:text-xl">Editar Aluguel</DialogTitle>
-              <DialogDescription className="text-sm">
+              <DialogTitle className="text-base sm:text-lg lg:text-xl">Editar Aluguel</DialogTitle>
+              <DialogDescription className="text-xs sm:text-sm">
                 Atualize as informações do aluguel de {selectedRental?.customers.name}
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-3 sm:space-y-4 px-1">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-chair-quantity" className="text-sm">Quantidade de Cadeiras</Label>
@@ -816,15 +816,15 @@ const ActiveRentals = () => {
                 />
               </div>
             </div>
-            <DialogFooter className="flex-col sm:flex-row gap-2">
+            <DialogFooter className="flex-col sm:flex-row gap-2 px-1">
               <Button
                 variant="outline"
                 onClick={() => setIsEditDialogOpen(false)}
-                className="w-full sm:w-auto text-sm"
+                className="w-full sm:w-auto text-xs sm:text-sm"
               >
                 Cancelar
               </Button>
-              <Button onClick={saveEditedRental} className="w-full sm:w-auto text-sm">Salvar Alterações</Button>
+              <Button onClick={saveEditedRental} className="w-full sm:w-auto text-xs sm:text-sm">Salvar Alterações</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
