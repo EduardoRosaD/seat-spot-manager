@@ -230,104 +230,170 @@ const Customers = () => {
   return (
     <ProtectedRoute>
       <Layout>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Clientes</h1>
-              <p className="text-muted-foreground">Gerencie seus clientes</p>
+        <div className="space-y-4 sm:space-y-6 px-3 sm:px-0 max-w-full overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Clientes</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">Gerencie seus clientes</p>
             </div>
-            <Button onClick={handleAddCustomer}>
+            <Button onClick={handleAddCustomer} className="w-full sm:w-auto text-sm flex-shrink-0">
               <Plus className="h-4 w-4 mr-2" />
               Adicionar Cliente
             </Button>
           </div>
 
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Lista de Clientes
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Users className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                <span className="truncate">Lista de Clientes</span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm">
                 {filteredCustomers.length} cliente{filteredCustomers.length !== 1 ? 's' : ''} cadastrado{filteredCustomers.length !== 1 ? 's' : ''}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6">
               <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Search className="h-4 w-4 text-muted-foreground" />
+                <div className="flex items-center gap-2 w-full">
+                  <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   <Input
                     placeholder="Buscar por nome, email ou telefone..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="max-w-sm"
+                    className="w-full text-sm min-w-0"
                   />
                 </div>
 
                 {loading ? (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="text-center py-8 text-sm text-muted-foreground">
                     Carregando...
                   </div>
                 ) : filteredCustomers.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="text-center py-8 text-sm text-muted-foreground">
                     {searchTerm
                       ? 'Nenhum cliente encontrado com esse termo de busca.'
                       : 'Nenhum cliente cadastrado ainda.'}
                   </div>
                 ) : (
-                  <div className="border rounded-md">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Nome</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Telefone</TableHead>
-                          <TableHead>Aluguéis</TableHead>
-                          <TableHead>Data de Cadastro</TableHead>
-                          <TableHead className="text-right">Ações</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredCustomers.map((customer) => (
-                          <TableRow key={customer.id}>
-                            <TableCell className="font-medium">
-                              {customer.name}
-                            </TableCell>
-                            <TableCell>
-                              {customer.email || <span className="text-muted-foreground">—</span>}
-                            </TableCell>
-                            <TableCell>
-                              {customer.phone || <span className="text-muted-foreground">—</span>}
-                            </TableCell>
-                            <TableCell>
-                              <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                {customer.rental_count || 0}
-                              </span>
-                            </TableCell>
-                            <TableCell>{formatDate(customer.created_at)}</TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleEditCustomer(customer)}
-                                >
-                                  <Pencil className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => handleDeleteCustomer(customer)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
+                  <>
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block border rounded-md overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="whitespace-nowrap">Nome</TableHead>
+                            <TableHead className="whitespace-nowrap">Email</TableHead>
+                            <TableHead className="whitespace-nowrap">Telefone</TableHead>
+                            <TableHead className="whitespace-nowrap">Aluguéis</TableHead>
+                            <TableHead className="whitespace-nowrap">Data de Cadastro</TableHead>
+                            <TableHead className="text-right whitespace-nowrap">Ações</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredCustomers.map((customer) => (
+                            <TableRow key={customer.id}>
+                              <TableCell className="font-medium whitespace-nowrap">
+                                {customer.name}
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {customer.email || <span className="text-muted-foreground">—</span>}
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {customer.phone || <span className="text-muted-foreground">—</span>}
+                              </TableCell>
+                              <TableCell>
+                                <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 whitespace-nowrap">
+                                  {customer.rental_count || 0}
+                                </span>
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap">{formatDate(customer.created_at)}</TableCell>
+                              <TableCell className="text-right whitespace-nowrap">
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleEditCustomer(customer)}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleDeleteCustomer(customer)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    {/* Mobile Card View */}
+                    <div className="md:hidden space-y-3 w-full">
+                      {filteredCustomers.map((customer) => (
+                        <Card key={customer.id} className="hover:shadow-md transition-shadow w-full">
+                          <CardContent className="p-3 sm:p-4">
+                            <div className="space-y-2.5 sm:space-y-3 w-full">
+                              {/* Header with name and actions */}
+                              <div className="flex items-start justify-between gap-2 w-full">
+                                <div className="min-w-0 flex-1 overflow-hidden">
+                                  <h3 className="font-semibold text-sm sm:text-base truncate">
+                                    {customer.name}
+                                  </h3>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[10px] sm:text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 whitespace-nowrap">
+                                      {customer.rental_count || 0} {customer.rental_count === 1 ? 'aluguel' : 'aluguéis'}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex gap-1.5 flex-shrink-0">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleEditCustomer(customer)}
+                                    className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                                  >
+                                    <Pencil className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                  </Button>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleDeleteCustomer(customer)}
+                                    className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                                  >
+                                    <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                  </Button>
+                                </div>
+                              </div>
+
+                              {/* Contact info */}
+                              <div className="space-y-1 sm:space-y-1.5 text-xs sm:text-sm w-full overflow-hidden">
+                                {customer.email && (
+                                  <div className="flex items-start gap-2 min-w-0">
+                                    <span className="text-muted-foreground flex-shrink-0 w-[55px] sm:w-[60px]">Email:</span>
+                                    <span className="break-all min-w-0 flex-1">{customer.email}</span>
+                                  </div>
+                                )}
+                                {customer.phone && (
+                                  <div className="flex items-start gap-2 min-w-0">
+                                    <span className="text-muted-foreground flex-shrink-0 w-[55px] sm:w-[60px]">Telefone:</span>
+                                    <span className="truncate">{customer.phone}</span>
+                                  </div>
+                                )}
+                                <div className="flex items-start gap-2 min-w-0">
+                                  <span className="text-muted-foreground flex-shrink-0 w-[55px] sm:w-[60px]">Cadastro:</span>
+                                  <span className="truncate">{formatDate(customer.created_at)}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
             </CardContent>
@@ -336,16 +402,16 @@ const Customers = () => {
 
         {/* Add Customer Dialog */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent>
+          <DialogContent className="w-[calc(100vw-2rem)] max-w-[425px] mx-auto">
             <DialogHeader>
-              <DialogTitle>Adicionar Cliente</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-base sm:text-lg">Adicionar Cliente</DialogTitle>
+              <DialogDescription className="text-xs sm:text-sm">
                 Preencha os dados do novo cliente
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="add-name">Nome *</Label>
+                <Label htmlFor="add-name" className="text-xs sm:text-sm">Nome *</Label>
                 <Input
                   id="add-name"
                   value={formData.name}
@@ -353,10 +419,11 @@ const Customers = () => {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   placeholder="Nome completo"
+                  className="text-sm w-full"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="add-email">Email</Label>
+                <Label htmlFor="add-email" className="text-xs sm:text-sm">Email</Label>
                 <Input
                   id="add-email"
                   type="email"
@@ -365,10 +432,11 @@ const Customers = () => {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   placeholder="email@exemplo.com"
+                  className="text-sm w-full"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="add-phone">Telefone</Label>
+                <Label htmlFor="add-phone" className="text-xs sm:text-sm">Telefone</Label>
                 <Input
                   id="add-phone"
                   value={formData.phone}
@@ -376,33 +444,35 @@ const Customers = () => {
                     setFormData({ ...formData, phone: e.target.value })
                   }
                   placeholder="(00) 00000-0000"
+                  className="text-sm w-full"
                 />
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
               <Button
                 variant="outline"
                 onClick={() => setIsAddDialogOpen(false)}
+                className="w-full sm:w-auto text-xs sm:text-sm"
               >
                 Cancelar
               </Button>
-              <Button onClick={saveCustomer}>Adicionar</Button>
+              <Button onClick={saveCustomer} className="w-full sm:w-auto text-xs sm:text-sm">Adicionar</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
         {/* Edit Customer Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent>
+          <DialogContent className="w-[calc(100vw-2rem)] max-w-[425px] mx-auto">
             <DialogHeader>
-              <DialogTitle>Editar Cliente</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-base sm:text-lg">Editar Cliente</DialogTitle>
+              <DialogDescription className="text-xs sm:text-sm">
                 Atualize os dados do cliente
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-name">Nome *</Label>
+                <Label htmlFor="edit-name" className="text-xs sm:text-sm">Nome *</Label>
                 <Input
                   id="edit-name"
                   value={formData.name}
@@ -410,10 +480,11 @@ const Customers = () => {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   placeholder="Nome completo"
+                  className="text-sm w-full"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-email">Email</Label>
+                <Label htmlFor="edit-email" className="text-xs sm:text-sm">Email</Label>
                 <Input
                   id="edit-email"
                   type="email"
@@ -422,10 +493,11 @@ const Customers = () => {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   placeholder="email@exemplo.com"
+                  className="text-sm w-full"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-phone">Telefone</Label>
+                <Label htmlFor="edit-phone" className="text-xs sm:text-sm">Telefone</Label>
                 <Input
                   id="edit-phone"
                   value={formData.phone}
@@ -433,38 +505,40 @@ const Customers = () => {
                     setFormData({ ...formData, phone: e.target.value })
                   }
                   placeholder="(00) 00000-0000"
+                  className="text-sm w-full"
                 />
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
               <Button
                 variant="outline"
                 onClick={() => setIsEditDialogOpen(false)}
+                className="w-full sm:w-auto text-xs sm:text-sm"
               >
                 Cancelar
               </Button>
-              <Button onClick={saveCustomer}>Salvar</Button>
+              <Button onClick={saveCustomer} className="w-full sm:w-auto text-xs sm:text-sm">Salvar</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <AlertDialogContent>
+          <AlertDialogContent className="w-[calc(100vw-2rem)] max-w-[425px] mx-auto">
             <AlertDialogHeader>
-              <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-              <AlertDialogDescription>
+              <AlertDialogTitle className="text-base sm:text-lg">Confirmar exclusão</AlertDialogTitle>
+              <AlertDialogDescription className="text-xs sm:text-sm">
                 Tem certeza que deseja excluir o cliente{' '}
                 <strong>{selectedCustomer?.name}</strong>? Esta ação não pode
                 ser desfeita e todos os aluguéis associados a este cliente
                 também serão removidos.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+              <AlertDialogCancel className="w-full sm:w-auto text-xs sm:text-sm m-0">Cancelar</AlertDialogCancel>
               <AlertDialogAction
                 onClick={confirmDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full sm:w-auto text-xs sm:text-sm"
               >
                 Excluir
               </AlertDialogAction>

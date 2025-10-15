@@ -376,10 +376,10 @@ const ActiveRentals = () => {
   return (
     <ProtectedRoute>
       <Layout>
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Gerenciar Aluguéis</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Gerenciar Aluguéis</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
               Visualize e gerencie todos os aluguéis ({totalRentals} total, {activeRentals} ativos, {inactiveRentals} finalizados)
             </p>
           </div>
@@ -387,27 +387,28 @@ const ActiveRentals = () => {
           {/* Filtros e Controles */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Filter className="h-4 w-4 sm:h-5 sm:w-5" />
                 Filtros e Ordenação
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="search">Buscar cliente</Label>
+                  <Label htmlFor="search" className="text-sm">Buscar cliente</Label>
                   <Input
                     id="search"
                     placeholder="Nome do cliente..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    className="text-sm"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
+                  <Label htmlFor="status" className="text-sm">Status</Label>
                   <Select value={filterStatus} onValueChange={(value: FilterStatus) => setFilterStatus(value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-sm">
                       <SelectValue placeholder="Selecione o status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -419,9 +420,9 @@ const ActiveRentals = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="sortBy">Ordenar por</Label>
+                  <Label htmlFor="sortBy" className="text-sm">Ordenar por</Label>
                   <Select value={sortBy} onValueChange={(value: SortBy) => setSortBy(value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-sm">
                       <SelectValue placeholder="Ordenar por" />
                     </SelectTrigger>
                     <SelectContent>
@@ -433,9 +434,9 @@ const ActiveRentals = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="sortOrder">Ordem</Label>
+                  <Label htmlFor="sortOrder" className="text-sm">Ordem</Label>
                   <Select value={sortOrder} onValueChange={(value: SortOrder) => setSortOrder(value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-sm">
                       <SelectValue placeholder="Ordem" />
                     </SelectTrigger>
                     <SelectContent>
@@ -474,50 +475,50 @@ const ActiveRentals = () => {
             <div className="grid gap-4">
               {filteredRentals.map((rental) => (
                 <Card key={rental.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <User className="h-5 w-5 text-muted-foreground" />
-                        <div>
-                          <CardTitle className="text-lg">{rental.customers.name}</CardTitle>
+                  <CardHeader className="pb-3 px-4 sm:px-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <User className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+                        <div className="min-w-0">
+                          <CardTitle className="text-base sm:text-lg truncate">{rental.customers.name}</CardTitle>
                           {rental.customers.phone && (
-                            <p className="text-sm text-muted-foreground">{rental.customers.phone}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{rental.customers.phone}</p>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getItemTypeBadgeColor(rental.item_type)}>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge className={`${getItemTypeBadgeColor(rental.item_type)} text-xs`}>
                           {getItemTypeLabel(rental.item_type)}
                         </Badge>
-                        <Badge variant={rental.returned ? "secondary" : "default"}>
+                        <Badge variant={rental.returned ? "secondary" : "default"} className="text-xs">
                           {rental.returned ? "Finalizado" : "Ativo"}
                         </Badge>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="flex items-center gap-2">
-                        <Package className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm">
+                  <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm">
                           <strong>{rental.chair_quantity || 0}</strong> cadeiras
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-2">
-                        <Table className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Table className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm">
                           <strong>{rental.table_quantity || 0}</strong> mesas
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <Square className="h-4 w-4 text-pink-600" />
-                        <span className="text-sm flex items-center gap-1">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Square className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-pink-600 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm flex items-center gap-1">
                           <strong>{rental.tablecloth_quantity || 0}</strong> toalhas
                           {rental.tablecloth_quantity > 0 && rental.tablecloth_colors?.hex_color && (
                             <div
-                              className="w-3 h-3 rounded-full border border-gray-300 ml-1"
+                              className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-gray-300 ml-0.5 sm:ml-1 flex-shrink-0"
                               style={{ backgroundColor: rental.tablecloth_colors.hex_color }}
                               title={rental.tablecloth_colors.name}
                             />
@@ -525,25 +526,25 @@ const ActiveRentals = () => {
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 text-yellow-600" />
-                        <span className="text-sm font-semibold">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-600 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm font-semibold">
                           R$ {rental.amount.toFixed(2)}
                         </span>
                       </div>
                     </div>
 
                     {rental.location_name && (
-                      <div className="flex items-center gap-2 pt-2">
-                        <MapPin className="h-4 w-4 text-red-600" />
-                        <span className="text-sm">{rental.location_name}</span>
+                      <div className="flex items-center gap-1.5 sm:gap-2 pt-1 sm:pt-2">
+                        <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm truncate">{rental.location_name}</span>
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <div className="text-sm">
+                    <div className="grid grid-cols-1 gap-2 sm:gap-3 pt-2 border-t">
+                      <div className="flex items-start gap-1.5 sm:gap-2">
+                        <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                        <div className="text-xs sm:text-sm">
                           <span className="text-muted-foreground">Criado em: </span>
                           <span className="font-medium">
                             {format(new Date(rental.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
@@ -552,9 +553,9 @@ const ActiveRentals = () => {
                       </div>
                       
                       {rental.start_date && (
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <div className="text-sm">
+                        <div className="flex items-start gap-1.5 sm:gap-2">
+                          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                          <div className="text-xs sm:text-sm">
                             <span className="text-muted-foreground">Início: </span>
                             <span className="font-medium">
                               {format(new Date(rental.start_date), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
@@ -564,9 +565,9 @@ const ActiveRentals = () => {
                       )}
                       
                       {rental.end_date && (
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <div className="text-sm flex items-center gap-2">
+                        <div className="flex items-start gap-1.5 sm:gap-2">
+                          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                          <div className="text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                             <div>
                               <span className="text-muted-foreground">Fim: </span>
                               <span className="font-medium">
@@ -582,14 +583,14 @@ const ActiveRentals = () => {
                                 return (
                                   <div className="flex items-center gap-1 text-red-600">
                                     <AlertTriangle className="h-3 w-3" />
-                                    <span className="text-xs font-medium">ATRASADO</span>
+                                    <span className="text-[10px] sm:text-xs font-medium">ATRASADO</span>
                                   </div>
                                 );
                               } else if (isDueToday && !rental.returned) {
                                 return (
                                   <div className="flex items-center gap-1 text-orange-600">
                                     <AlertTriangle className="h-3 w-3" />
-                                    <span className="text-xs font-medium">VENCE HOJE</span>
+                                    <span className="text-[10px] sm:text-xs font-medium">VENCE HOJE</span>
                                   </div>
                                 );
                               }
@@ -600,31 +601,33 @@ const ActiveRentals = () => {
                       )}
                     </div>
 
-                    <div className="flex justify-end pt-2 gap-2">
+                    <div className="flex flex-col sm:flex-row sm:justify-end pt-2 gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleEditRental(rental)}
-                        className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
+                        className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 w-full sm:w-auto text-xs sm:text-sm"
                       >
-                        <Pencil className="h-4 w-4 mr-1" />
-                        Editar
+                        <Pencil className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1" />
+                        <span className="hidden sm:inline">Editar</span>
+                        <span className="sm:hidden">Editar</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleDeleteRental(rental)}
-                        className="hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                        className="hover:bg-red-50 hover:text-red-700 hover:border-red-300 w-full sm:w-auto text-xs sm:text-sm"
                       >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Excluir
+                        <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1" />
+                        <span className="hidden sm:inline">Excluir</span>
+                        <span className="sm:hidden">Excluir</span>
                       </Button>
                       {!rental.returned && (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleMarkAsReturned(rental.id)}
-                          className="hover:bg-green-50 hover:text-green-700 hover:border-green-300"
+                          className="hover:bg-green-50 hover:text-green-700 hover:border-green-300 w-full sm:w-auto text-xs sm:text-sm"
                         >
                           Marcar como Devolvido
                         </Button>
@@ -632,11 +635,11 @@ const ActiveRentals = () => {
                     </div>
 
                     {rental.notes && (
-                      <div className="mt-4 p-3 bg-gray-50 rounded-md">
+                      <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 bg-gray-50 rounded-md">
                         <div className="flex items-start gap-2">
-                          <div className="text-sm">
+                          <div className="text-xs sm:text-sm">
                             <span className="font-medium text-gray-700">Observações:</span>
-                            <p className="text-gray-600 mt-1">{rental.notes}</p>
+                            <p className="text-gray-600 mt-1 break-words">{rental.notes}</p>
                           </div>
                         </div>
                       </div>
@@ -650,17 +653,17 @@ const ActiveRentals = () => {
 
         {/* Edit Rental Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
             <DialogHeader>
-              <DialogTitle>Editar Aluguel</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-lg sm:text-xl">Editar Aluguel</DialogTitle>
+              <DialogDescription className="text-sm">
                 Atualize as informações do aluguel de {selectedRental?.customers.name}
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-chair-quantity">Quantidade de Cadeiras</Label>
+                  <Label htmlFor="edit-chair-quantity" className="text-sm">Quantidade de Cadeiras</Label>
                   <Input
                     id="edit-chair-quantity"
                     type="number"
@@ -669,10 +672,11 @@ const ActiveRentals = () => {
                     onChange={(e) =>
                       setEditFormData({ ...editFormData, chair_quantity: e.target.value })
                     }
+                    className="text-sm"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-table-quantity">Quantidade de Mesas</Label>
+                  <Label htmlFor="edit-table-quantity" className="text-sm">Quantidade de Mesas</Label>
                   <Input
                     id="edit-table-quantity"
                     type="number"
@@ -681,10 +685,11 @@ const ActiveRentals = () => {
                     onChange={(e) =>
                       setEditFormData({ ...editFormData, table_quantity: e.target.value })
                     }
+                    className="text-sm"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-tablecloth-quantity">Quantidade de Toalhas</Label>
+                  <Label htmlFor="edit-tablecloth-quantity" className="text-sm">Quantidade de Toalhas</Label>
                   <Input
                     id="edit-tablecloth-quantity"
                     type="number"
@@ -693,18 +698,19 @@ const ActiveRentals = () => {
                     onChange={(e) =>
                       setEditFormData({ ...editFormData, tablecloth_quantity: e.target.value })
                     }
+                    className="text-sm"
                   />
                 </div>
               </div>
 
               {parseInt(editFormData.tablecloth_quantity) > 0 && (
                 <div className="space-y-2">
-                  <Label htmlFor="edit-tablecloth-color">Cor das Toalhas</Label>
+                  <Label htmlFor="edit-tablecloth-color" className="text-sm">Cor das Toalhas</Label>
                   <Select 
                     value={editFormData.tablecloth_color_id} 
                     onValueChange={(value) => setEditFormData({ ...editFormData, tablecloth_color_id: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="text-sm">
                       <SelectValue placeholder="Selecione uma cor">
                         {editFormData.tablecloth_color_id && (() => {
                           const selectedColor = tableclothColors.find(color => color.id === editFormData.tablecloth_color_id);
@@ -742,7 +748,7 @@ const ActiveRentals = () => {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="edit-amount">Valor Total (R$)</Label>
+                <Label htmlFor="edit-amount" className="text-sm">Valor Total (R$)</Label>
                 <Input
                   id="edit-amount"
                   type="number"
@@ -752,11 +758,12 @@ const ActiveRentals = () => {
                   onChange={(e) =>
                     setEditFormData({ ...editFormData, amount: e.target.value })
                   }
+                  className="text-sm"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-location">Localização</Label>
+                <Label htmlFor="edit-location" className="text-sm">Localização</Label>
                 <Input
                   id="edit-location"
                   value={editFormData.location_name}
@@ -764,12 +771,13 @@ const ActiveRentals = () => {
                     setEditFormData({ ...editFormData, location_name: e.target.value })
                   }
                   placeholder="Ex: Salão de festas"
+                  className="text-sm"
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-start-date">Data de Início</Label>
+                  <Label htmlFor="edit-start-date" className="text-sm">Data de Início</Label>
                   <Input
                     id="edit-start-date"
                     type="datetime-local"
@@ -777,10 +785,11 @@ const ActiveRentals = () => {
                     onChange={(e) =>
                       setEditFormData({ ...editFormData, start_date: e.target.value })
                     }
+                    className="text-sm"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-end-date">Data de Término</Label>
+                  <Label htmlFor="edit-end-date" className="text-sm">Data de Término</Label>
                   <Input
                     id="edit-end-date"
                     type="datetime-local"
@@ -788,12 +797,13 @@ const ActiveRentals = () => {
                     onChange={(e) =>
                       setEditFormData({ ...editFormData, end_date: e.target.value })
                     }
+                    className="text-sm"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-notes">Observações</Label>
+                <Label htmlFor="edit-notes" className="text-sm">Observações</Label>
                 <Textarea
                   id="edit-notes"
                   value={editFormData.notes}
@@ -802,17 +812,19 @@ const ActiveRentals = () => {
                   }
                   placeholder="Observações adicionais sobre o aluguel..."
                   rows={3}
+                  className="text-sm"
                 />
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex-col sm:flex-row gap-2">
               <Button
                 variant="outline"
                 onClick={() => setIsEditDialogOpen(false)}
+                className="w-full sm:w-auto text-sm"
               >
                 Cancelar
               </Button>
-              <Button onClick={saveEditedRental}>Salvar Alterações</Button>
+              <Button onClick={saveEditedRental} className="w-full sm:w-auto text-sm">Salvar Alterações</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
